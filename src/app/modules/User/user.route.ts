@@ -9,7 +9,11 @@ const router = Router();
 
 router.get("/all-user", auth(USER_ROLE.admin), UserController.getAllUser);
 
-router.get("/single-user/:_id", UserController.getSingleUser);
+router.get(
+  "/single-user/:_id",
+  auth(USER_ROLE.admin, USER_ROLE.user),
+  UserController.getSingleUser
+);
 
 router.patch(
   "/update-user/:_id",
