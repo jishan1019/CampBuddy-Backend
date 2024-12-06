@@ -51,7 +51,6 @@ const loginUserFromDb = async (payload: TAuth) => {
   return {
     accessToken,
     refreshToken,
-    user,
   };
 };
 
