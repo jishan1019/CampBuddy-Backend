@@ -67,7 +67,9 @@ userSchema.statics.isUserExistsByCustomId = async function (id: string) {
 };
 
 userSchema.statics.isPasswordMatch = async function (dbUserPass, payloadPass) {
-  return await argon2.verify(dbUserPass, payloadPass);
+  const result = await argon2.verify(dbUserPass, payloadPass);
+
+  return result;
 };
 
 const UserModel = model<TUser, TUserModel>("User", userSchema);
