@@ -10,13 +10,13 @@ import {
 const router = Router();
 
 router.post(
-  "/signin",
+  "/sign-in",
   validateRequest(authValidationSchema),
   AuthController.loginUser
 );
 
 router.post(
-  "/signup",
+  "/sign-up",
   validateRequest(userValidationSchema),
   AuthController.createUser
 );
