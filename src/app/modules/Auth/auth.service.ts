@@ -29,6 +29,8 @@ const loginUserFromDb = async (payload: TAuth) => {
     );
   }
 
+  user.password = "";
+
   const jwtPayload = {
     userId: user._id,
     role: user.role,
