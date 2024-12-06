@@ -13,7 +13,7 @@ export const sendEmail = async (
   roomId: number,
   bookingDate: string
 ) => {
-  const htmlTemplatePath = path.join(__dirname, "../views/bookHotel.html");
+  const htmlTemplatePath = path.join(__dirname, "../views/email.html");
 
   let htmlTemplate;
   try {

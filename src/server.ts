@@ -19,8 +19,6 @@ async function main() {
 
 main();
 
-//unhandledRejection for asynchronous code
-//unhandledRejection for synchronous code
 
 process.on("unhandledRejection", () => {
   if (server) {
