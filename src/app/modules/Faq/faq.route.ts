@@ -13,7 +13,7 @@ const router = Router();
 router.get("/all-faq", FaqController.getAllFaq);
 
 router.post(
-  "/create-faq/:_id",
+  "/create-faq",
   auth(USER_ROLE.admin),
   validateRequest(faqValidationSchema),
   FaqController.createFaq
