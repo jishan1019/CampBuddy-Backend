@@ -75,12 +75,41 @@ const addToCartFromDB = async (userId: JwtPayload, payload: TCartItem) => {
     };
 
     const result = await CartModel.create(newPayloadData);
-
     return result;
   }
+};
+
+const deleteCartItemFromDB = async (userId: JwtPayload, itemId: string) => {
+  const cart = await CartModel.findOne({ user: userId });
+
+  if (!cart) {
+    throw new AppError(httpStatus.NOT_FOUND, "Cart item not found");
+  }
+
+  const product = await ProductModel.findOne({ _id: itemId }).select("price");
+
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, "Product not found");
+  }
+
+  const cartItem = cart.items.find(
+    (item) => item.product.toString() === itemId
+  );
+
+  const result = await CartModel.updateOne(
+    { user: userId },
+    {
+      $inc: { totalPrice: -product.price * (cartItem?.quantity || 1) },
+      $pull: { items: { product: itemId } },
+    },
+    { new: true, arrayFilters: [{ "item.product": itemId }] }
+  );
+
+  return null;
 };
 
 export const CartService = {
   getMyCartFromDB,
   addToCartFromDB,
+  deleteCartItemFromDB,
 };

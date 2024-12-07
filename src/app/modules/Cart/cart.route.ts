@@ -11,6 +11,10 @@ router.post("/add-to-cart", auth(USER_ROLE.user), CartController.addToCart);
 
 router.patch("/update-cart-quantity/:_id", auth(USER_ROLE.user));
 
-router.delete("/delete-cart-item/:_id", auth(USER_ROLE.user));
+router.delete(
+  "/delete-cart-item/:_id",
+  auth(USER_ROLE.user),
+  CartController.deleteCartItem
+);
 
 export const CartRoutes = router;

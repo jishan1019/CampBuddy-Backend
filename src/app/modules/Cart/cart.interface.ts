@@ -7,6 +7,6 @@ export type TCartItem = {
 
 export type TCart = {
   user: Types.ObjectId;
-  items: TCartItem[];
   totalPrice: number;
+  items: TCartItem[];
 };

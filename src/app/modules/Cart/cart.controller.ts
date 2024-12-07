@@ -30,7 +30,22 @@ const addToCart = catchAsync(async (req, res) => {
   });
 });
 
+const deleteCartItem = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const { _id } = req.params;
+
+  const result = await CartService.deleteCartItemFromDB(userId, _id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Cart item remove successfully",
+    data: result,
+  });
+});
+
 export const CartController = {
   getMyCart,
   addToCart,
+  deleteCartItem,
 };
