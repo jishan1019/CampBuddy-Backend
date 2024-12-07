@@ -6,6 +6,7 @@ import { TCategory } from "./category.interface";
 import { CategorySearchableField } from "./category.constant";
 import { ProductModel } from "../Product/product.model";
 import { WishListModel } from "../WishList/wishlist.model";
+import mongoose from "mongoose";
 
 const getAllCategoryFromDB = async (query: Record<string, unknown>) => {
   const CategoryQuery = new QueryBuilder(CategoryModel.find(), query)
@@ -88,22 +89,52 @@ const updateCategoryIntroDb = async (
   return null;
 };
 
-const deleteSingleCategoryFromDB = async (id: string) => {
-  const productDeleteResult = await ProductModel.deleteMany({ category: id });
+import mongoose from "mongoose";
+import { CategoryModel } from "../models/CategoryModel"; // Replace with actual paths
+import { ProductModel } from "../models/ProductModel";
+import { WishListModel } from "../models/WishListModel";
+import AppError from "../utils/AppError"; // Replace with your error class path
+import httpStatus from "http-status"; // Replace with your HTTP status utility if needed
 
-  console.log(productDeleteResult);
+export const deleteSingleCategoryFromDB = async (id: string) => {
+  const session = await mongoose.startSession();
 
-  // const wishListProductDeleteResult = await WishListModel.deleteMany({
-  //   product: id,
-  // });
+  try {
+    session.startTransaction();
 
-  // const result = await CategoryModel.findByIdAndDelete(id);
+    const isExistCategory = await CategoryModel.findById(id).session(session);
+    if (!isExistCategory) {
+      throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+    }
 
-  // if (!result) {
-  //   throw new AppError(httpStatus.NOT_FOUND, "Category not found");
-  // }
+    const allProductOnThisCategory = await ProductModel.find({
+      category: id,
+    })
+      .select("_id")
+      .session(session);
 
-  return null;
+    const productIds = allProductOnThisCategory.map((product) => product._id);
+
+    await ProductModel.deleteMany({ _id: { $in: productIds } }).session(
+      session
+    );
+
+    await WishListModel.deleteMany({ product: { $in: productIds } }).session(
+      session
+    );
+
+    await CategoryModel.deleteOne({ _id: id }).session(session);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return null;
+  } catch (error: any) {
+    await session.abortTransaction();
+    session.endSession();
+
+    throw new AppError(httpStatus.BAD_REQUEST, error.message);
+  }
 };
 
 export const CategoryService = {

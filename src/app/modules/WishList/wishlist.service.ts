@@ -19,7 +19,7 @@ const addWishListItemFromDB = async (
     product: payload.product,
   };
 
-  const existItem = await WishListModel.findOne({ _id: payload?.product });
+  const existItem = await WishListModel.findOne({ product: payload?.product });
 
   if (existItem) {
     throw new AppError(
@@ -33,10 +33,9 @@ const addWishListItemFromDB = async (
   return result;
 };
 
-const deleteWishListFromDB = async (userId: JwtPayload, productId: string) => {
+const deleteWishListFromDB = async (itemId: string) => {
   const result = await WishListModel.deleteOne({
-    user: userId,
-    product: productId,
+    _id: itemId,
   });
 
   if (!result) {

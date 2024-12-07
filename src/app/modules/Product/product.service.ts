@@ -4,6 +4,7 @@ import AppError from "../../errors/AppError";
 import { ProductModel } from "./product.model";
 import { ProductSearchableField } from "./product.constant";
 import { TProduct } from "./product.interface";
+import { CategoryModel } from "../Category/category.model";
 
 const getAllProductFromDB = async (query: Record<string, unknown>) => {
   const ProductQuery = new QueryBuilder(ProductModel.find(), query)
@@ -17,13 +18,13 @@ const getAllProductFromDB = async (query: Record<string, unknown>) => {
   const meta = await ProductQuery.countTotal();
 
   return {
-    result,
     meta,
+    result,
   };
 };
 
 const getSingleProductFromDB = async (_id: string) => {
-  const result = await ProductModel.findOne({ id: _id });
+  const result = await ProductModel.findOne({ _id: _id });
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Product Not Found");
@@ -33,7 +34,7 @@ const getSingleProductFromDB = async (_id: string) => {
 };
 
 const createProductIntroDb = async (payload: TProduct) => {
-  const category = await ProductModel.findOne({ _id: payload.category });
+  const category = await CategoryModel.findOne({ _id: payload.category });
 
   if (!category) {
     throw new AppError(httpStatus.BAD_REQUEST, "Product Category Not Found");
@@ -46,7 +47,7 @@ const createProductIntroDb = async (payload: TProduct) => {
 
 const updateProductIntroDb = async (id: string, payload: Partial<TProduct>) => {
   if (payload?.category) {
-    const category = await ProductModel.findOne({ _id: payload?.category });
+    const category = await CategoryModel.findOne({ _id: payload?.category });
 
     if (!category) {
       throw new AppError(httpStatus.BAD_REQUEST, "Product Category Not Found");
