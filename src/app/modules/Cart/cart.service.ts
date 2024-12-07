@@ -4,6 +4,7 @@ import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { TCartItem } from "./cart.interface";
 import { ProductModel } from "../Product/product.model";
+import { CART_INC_TYPE } from "./cart.constant";
 
 const getMyCartFromDB = async (userId: JwtPayload) => {
   const result = await CartModel.findOne({ user: userId }).populate({
@@ -79,6 +80,44 @@ const addToCartFromDB = async (userId: JwtPayload, payload: TCartItem) => {
   }
 };
 
+const updateCartQtyFromDB = async (
+  userId: JwtPayload,
+  payload: Partial<TCartItem>
+) => {
+  const cart = await CartModel.findOne({ user: userId });
+
+  if (!cart) {
+    throw new AppError(httpStatus.NOT_FOUND, "Cart item not found");
+  }
+
+  const product = await ProductModel.findOne({ _id: payload.product });
+
+  if (!product) {
+    throw new AppError(httpStatus.NOT_FOUND, "Product not found");
+  }
+
+  const result = await CartModel.findByIdAndUpdate(
+    cart?._id,
+    {
+      $inc: {
+        totalPrice:
+          payload.cartIncType === CART_INC_TYPE.increment
+            ? product.price
+            : -product.price,
+
+        "items.$[item].quantity":
+          payload.cartIncType === CART_INC_TYPE.increment ? 1 : -1,
+      },
+    },
+    {
+      new: true,
+      arrayFilters: [{ "item.product": payload.product }],
+    }
+  );
+
+  return result;
+};
+
 const deleteCartItemFromDB = async (userId: JwtPayload, itemId: string) => {
   const cart = await CartModel.findOne({ user: userId });
 
@@ -111,5 +150,6 @@ const deleteCartItemFromDB = async (userId: JwtPayload, itemId: string) => {
 export const CartService = {
   getMyCartFromDB,
   addToCartFromDB,
+  updateCartQtyFromDB,
   deleteCartItemFromDB,
 };

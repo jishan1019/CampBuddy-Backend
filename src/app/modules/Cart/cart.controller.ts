@@ -30,6 +30,20 @@ const addToCart = catchAsync(async (req, res) => {
   });
 });
 
+const updateCartQty = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const data = req.body;
+
+  const result = await CartService.updateCartQtyFromDB(userId, data);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Cart item remove successfully",
+    data: result,
+  });
+});
+
 const deleteCartItem = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const { _id } = req.params;
@@ -47,5 +61,6 @@ const deleteCartItem = catchAsync(async (req, res) => {
 export const CartController = {
   getMyCart,
   addToCart,
+  updateCartQty,
   deleteCartItem,
 };

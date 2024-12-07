@@ -9,7 +9,11 @@ router.get("/my-cart", auth(USER_ROLE.user), CartController.getMyCart);
 
 router.post("/add-to-cart", auth(USER_ROLE.user), CartController.addToCart);
 
-router.patch("/update-cart-quantity/:_id", auth(USER_ROLE.user));
+router.patch(
+  "/update-cart-quantity",
+  auth(USER_ROLE.user),
+  CartController.updateCartQty
+);
 
 router.delete(
   "/delete-cart-item/:_id",
