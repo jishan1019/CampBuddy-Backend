@@ -17,8 +17,8 @@ const getAllCategoryFromDB = async (query: Record<string, unknown>) => {
   const meta = await CategoryQuery.countTotal();
 
   return {
-    result,
     meta,
+    result,
   };
 };
 
@@ -33,11 +33,19 @@ const getSingleCategoryFromDB = async (_id: string) => {
 };
 
 const createCategoryIntroDb = async (payload: TCategory) => {
-  const result = await CategoryModel.create(payload);
+  const normalizedName = payload.name.trim().toLowerCase();
 
-  if (result) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Category create failed");
+  const isExistCategory = await CategoryModel.findOne({
+    name: normalizedName,
+  });
+
+  if (isExistCategory) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Category already exists");
   }
+
+  payload.name = normalizedName;
+
+  const result = await CategoryModel.create(payload);
 
   return result;
 };
@@ -46,15 +54,36 @@ const updateCategoryIntroDb = async (
   id: string,
   payload: Partial<TCategory>
 ) => {
-  const result = await CategoryModel.findByIdAndUpdate(id, payload, {
+  const isExistCategory = await CategoryModel.findOne({ _id: id }).select(
+    "name"
+  );
+
+  if (!isExistCategory) {
+    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  }
+
+  if (payload?.name) {
+    const normalizedName = payload?.name?.trim().toLowerCase();
+
+    const isExistCategoryByName = await CategoryModel.findOne({
+      name: normalizedName,
+    }).select("name");
+
+    if (isExistCategoryByName) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Category name already exists"
+      );
+    }
+
+    payload.name = normalizedName;
+  }
+
+  const result = await CategoryModel.updateOne({ _id: id }, payload, {
     new: true,
   });
 
-  if (!result) {
-    throw new AppError(httpStatus.NOT_FOUND, "Failed to update Category");
-  }
-
-  return result;
+  return null;
 };
 
 const deleteSingleCategoryFromDB = async (id: string) => {

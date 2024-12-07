@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { CategoryService } from "./Category.service";
+import { CategoryService } from "./category.service";
 
 const getAllCategory = catchAsync(async (req, res) => {
   const query = req.query;
