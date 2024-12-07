@@ -4,6 +4,7 @@ import { AuthRoutes } from "../modules/Auth/auth.route";
 import { FaqRoutes } from "../modules/Faq/faq.route";
 import { CategoryRoutes } from "../modules/Category/category.route";
 import { ProductRoutes } from "../modules/Product/product.route";
+import { WishListRoutes } from "../modules/WishList/wishlist.route";
 
 const router = Router();
 
@@ -28,6 +29,10 @@ const moduleRoutes = [
   {
     path: "/product",
     route: ProductRoutes,
+  },
+  {
+    path: "/wishlist",
+    route: WishListRoutes,
   },
 ];
 
