@@ -89,13 +89,6 @@ const updateCategoryIntroDb = async (
   return null;
 };
 
-import mongoose from "mongoose";
-import { CategoryModel } from "../models/CategoryModel"; // Replace with actual paths
-import { ProductModel } from "../models/ProductModel";
-import { WishListModel } from "../models/WishListModel";
-import AppError from "../utils/AppError"; // Replace with your error class path
-import httpStatus from "http-status"; // Replace with your HTTP status utility if needed
-
 export const deleteSingleCategoryFromDB = async (id: string) => {
   const session = await mongoose.startSession();
 

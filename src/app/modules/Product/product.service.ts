@@ -5,6 +5,8 @@ import { ProductModel } from "./product.model";
 import { ProductSearchableField } from "./product.constant";
 import { TProduct } from "./product.interface";
 import { CategoryModel } from "../Category/category.model";
+import mongoose from "mongoose";
+import { WishListModel } from "../WishList/wishlist.model";
 
 const getAllProductFromDB = async (query: Record<string, unknown>) => {
   const ProductQuery = new QueryBuilder(ProductModel.find(), query)
@@ -66,13 +68,30 @@ const updateProductIntroDb = async (id: string, payload: Partial<TProduct>) => {
 };
 
 const deleteSingleProductFromDB = async (id: string) => {
-  const result = await ProductModel.findByIdAndDelete(id);
+  const session = await mongoose.startSession();
 
-  if (!result) {
-    throw new AppError(httpStatus.NOT_FOUND, "Product not found");
+  try {
+    session.startTransaction();
+
+    const isExistProduct = await ProductModel.findById(id).session(session);
+    if (!isExistProduct) {
+      throw new AppError(httpStatus.NOT_FOUND, "Product not found");
+    }
+
+    await ProductModel.deleteOne({ _id: id }).session(session);
+
+    await WishListModel.deleteMany({ product: id }).session(session);
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return null;
+  } catch (error: any) {
+    await session.abortTransaction();
+    session.endSession();
+
+    throw new AppError(httpStatus.BAD_REQUEST, error.message);
   }
-
-  return null;
 };
 
 export const ProductService = {

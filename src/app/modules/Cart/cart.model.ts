@@ -8,7 +8,8 @@ const cartItemSchema = new Schema<TCartItem>({
     required: true,
   },
   quantity: {
-    Types: Number,
+    type: Number,
+    required: true,
     default: 1,
   },
 });
