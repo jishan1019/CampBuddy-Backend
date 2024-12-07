@@ -31,10 +31,10 @@ const addWishListItem = catchAsync(async (req, res) => {
 });
 
 const deleteWishList = catchAsync(async (req, res) => {
-  const { itemId } = req.params;
+  const { productId } = req.params;
   const { userId } = req.user;
 
-  const result = await WishListService.deleteWishListFromDB(userId, itemId);
+  const result = await WishListService.deleteWishListFromDB(userId, productId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

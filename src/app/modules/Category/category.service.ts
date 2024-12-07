@@ -4,6 +4,8 @@ import AppError from "../../errors/AppError";
 import { CategoryModel } from "./category.model";
 import { TCategory } from "./category.interface";
 import { CategorySearchableField } from "./category.constant";
+import { ProductModel } from "../Product/product.model";
+import { WishListModel } from "../WishList/wishlist.model";
 
 const getAllCategoryFromDB = async (query: Record<string, unknown>) => {
   const CategoryQuery = new QueryBuilder(CategoryModel.find(), query)
@@ -87,11 +89,19 @@ const updateCategoryIntroDb = async (
 };
 
 const deleteSingleCategoryFromDB = async (id: string) => {
-  const result = await CategoryModel.findByIdAndDelete(id);
+  const productDeleteResult = await ProductModel.deleteMany({ category: id });
 
-  if (!result) {
-    throw new AppError(httpStatus.NOT_FOUND, "Category not found");
-  }
+  console.log(productDeleteResult);
+
+  // const wishListProductDeleteResult = await WishListModel.deleteMany({
+  //   product: id,
+  // });
+
+  // const result = await CategoryModel.findByIdAndDelete(id);
+
+  // if (!result) {
+  //   throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+  // }
 
   return null;
 };

@@ -8,7 +8,7 @@ const wishListSchema = new Schema<TWishList>(
       ref: "User",
       required: true,
     },
-    item: {
+    product: {
       type: Schema.Types.ObjectId,
       ref: "Product",
       required: true,

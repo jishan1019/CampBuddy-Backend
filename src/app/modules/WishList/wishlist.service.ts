@@ -5,7 +5,7 @@ import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 
 const getMyWishlistFromDB = async (userId: JwtPayload) => {
-  const result = await WishListModel.find({ user: userId }).populate("item");
+  const result = await WishListModel.find({ user: userId }).populate("product");
 
   return result;
 };
@@ -16,10 +16,10 @@ const addWishListItemFromDB = async (
 ) => {
   const data = {
     user: userId,
-    item: payload.item,
+    product: payload.product,
   };
 
-  const existItem = await WishListModel.findOne({ _id: payload?.item });
+  const existItem = await WishListModel.findOne({ _id: payload?.product });
 
   if (existItem) {
     throw new AppError(
@@ -33,14 +33,14 @@ const addWishListItemFromDB = async (
   return result;
 };
 
-const deleteWishListFromDB = async (userId: JwtPayload, itemId: string) => {
+const deleteWishListFromDB = async (userId: JwtPayload, productId: string) => {
   const result = await WishListModel.deleteOne({
     user: userId,
-    item: itemId,
+    product: productId,
   });
 
   if (!result) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Failed to remove item");
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to remove product");
   }
 
   return null;
