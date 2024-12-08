@@ -1,14 +1,14 @@
 import { Types } from "mongoose";
 
+export type TOrderStatus = "Pending" | "Paid" | "Cancelled";
+
+export type TPaymentMethod = "COD" | "Stripe";
+
 export type TOrderItems = {
   product: Types.ObjectId;
   quantity: number;
   price: number;
 };
-
-export type TOrderStatus = "Pending" | "Paid" | "Cancelled";
-
-export type TPaymentMethod = "COD" | "Stripe";
 
 export type TOrder = {
   user: Types.ObjectId;
